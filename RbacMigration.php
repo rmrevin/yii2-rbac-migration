@@ -63,8 +63,8 @@ abstract class RbacMigration extends \yii\db\Migration
         return [];
 //        example
 //        return [
-//            'its.my.order',
-//            'its.my.comment',
+//            RbacFactory::Rule('its.my.order'),
+//            RbacFactory::Rule('its.my.comment'),
 //        ];
     }
 
@@ -77,8 +77,8 @@ abstract class RbacMigration extends \yii\db\Migration
 //        example
 //        return [
 //            'its.my.comment' => [
-//                'old' => 'its.my.comment',
-//                'new' => 'its-my-comment',
+//                'old' => RbacFactory::Rule('its.my.comment'),
+//                'new' => RbacFactory::Rule('its-my-comment'),
 //            ]
 //        ];
     }
@@ -91,7 +91,7 @@ abstract class RbacMigration extends \yii\db\Migration
         return [];
 //        example
 //        return [
-//            'its.my.comment',
+//            RbacFactory::Rule('its.my.comment'),
 //        ];
     }
 
@@ -103,10 +103,10 @@ abstract class RbacMigration extends \yii\db\Migration
         return [];
 //        example
 //        return [
-//            'admin'   => 'Administrator',
-//            'manager' => RbacFactory::Role('manager', 'Manager'),
-//            'client'  => RbacFactory::Role('client',  'Client', rule),
-//            'user'    => 'User',
+//            RbacFactory::Role('admin', 'Administrator'),
+//            RbacFactory::Role('manager', 'Manager'),
+//            RbacFactory::Role('client',  'Client', rule),
+//            RbacFactory::Role('user', 'User'),
 //        ];
     }
 
@@ -133,7 +133,7 @@ abstract class RbacMigration extends \yii\db\Migration
         return [];
 //        example
 //        return [
-//            'client' => 'Client',
+//            RbacFactory::Role('client', 'Client'),
 //        ];
     }
 
@@ -145,8 +145,8 @@ abstract class RbacMigration extends \yii\db\Migration
         return [];
 //        example
 //        return [
-//            'frontend.private.access' => 'Can enter to private area',
-//            'frontend.private.orders' => 'Can view all orders',
+//            RbacFactory::Permission('frontend.private.access', 'Can enter to private area'),
+//            RbacFactory::Permission('frontend.private.orders', 'Can view all orders'),
 //        ];
     }
 
@@ -173,7 +173,7 @@ abstract class RbacMigration extends \yii\db\Migration
         return [];
 //        example
 //        return [
-//            'frontend.private.access' => 'Can enter to private area',
+//            RbacFactory::Permission('frontend.private.access', 'Can enter to private area'),
 //        ];
     }
 
@@ -209,11 +209,7 @@ abstract class RbacMigration extends \yii\db\Migration
     {
         $AuthManager = $this->getAuthManager();
 
-        foreach ($this->getNewRoles() as $role => $description) {
-            $Role = $description instanceof \yii\rbac\Role
-                ? $description
-                : RbacFactory::Role($role, $description);
-
+        foreach ($this->getNewRoles() as $Role) {
             $AuthManager->add($Role);
             echo "    > new role `{$Role->name}` added." . PHP_EOL;
         }
@@ -223,9 +219,9 @@ abstract class RbacMigration extends \yii\db\Migration
             echo "    > role `{$stack['old']->name}` renamed to `{$stack['new']->name}`." . PHP_EOL;
         }
 
-        foreach ($this->getRemoveRoles() as $role => $description) {
-            $AuthManager->remove(RbacFactory::Role($role));
-            echo "    > role `$role` removed." . PHP_EOL;
+        foreach ($this->getRemoveRoles() as $Role) {
+            $AuthManager->remove($Role);
+            echo "    > role `{$Role->name}` removed." . PHP_EOL;
         }
     }
 
@@ -233,13 +229,9 @@ abstract class RbacMigration extends \yii\db\Migration
     {
         $AuthManager = $this->getAuthManager();
 
-        foreach ($this->getRemoveRoles() as $role => $description) {
-            $Role = $description instanceof \yii\rbac\Role
-                ? $description
-                : RbacFactory::Role($role, $description);
-
+        foreach ($this->getRemoveRoles() as $Role) {
             $AuthManager->add($Role);
-            echo "    > old role `$role` restored." . PHP_EOL;
+            echo "    > old role `{$Role->name}` restored." . PHP_EOL;
         }
 
         foreach ($this->getRenamedRoles() as $role => $stack) {
@@ -247,13 +239,9 @@ abstract class RbacMigration extends \yii\db\Migration
             echo "    > role `{$stack['new']->name}` renamed to `{$stack['old']->name}`." . PHP_EOL;
         }
 
-        foreach ($this->getNewRoles() as $role => $description) {
-            $Role = $description instanceof \yii\rbac\Role
-                ? $description
-                : RbacFactory::Role($role, $description);
-
+        foreach ($this->getNewRoles() as $Role) {
             $AuthManager->remove($Role);
-            echo "    > new role `$role` removed." . PHP_EOL;
+            echo "    > new role `{$Role->name}` removed." . PHP_EOL;
         }
     }
 
@@ -261,35 +249,19 @@ abstract class RbacMigration extends \yii\db\Migration
     {
         $AuthManager = $this->getAuthManager();
 
-        foreach ($this->getNewRules() as $rule) {
-            $Rule = $rule instanceof \yii\rbac\Rule
-                ? $rule
-                : RbacFactory::Rule($rule);
-
+        foreach ($this->getNewRules() as $Rule) {
             $AuthManager->add($Rule);
-            echo "    > new rule `$rule` added." . PHP_EOL;
+            echo "    > new rule `{$Rule->name}` added." . PHP_EOL;
         }
 
         foreach ($this->getRenamedRules() as $rule => $stack) {
-            $OldRule = $stack['old'] instanceof \yii\rbac\Rule
-                ? $stack['old']
-                : RbacFactory::Rule($stack['old']);
-
-            $NewRule = $stack['new'] instanceof \yii\rbac\Rule
-                ? $stack['new']
-                : RbacFactory::Rule($stack['new']);
-
-            $AuthManager->update($OldRule->name, $NewRule);
-            echo "    > rule `{$OldRule->name}` renamed to `{$NewRule->name}`." . PHP_EOL;
+            $AuthManager->update($stack['old']->name, $stack['new']);
+            echo "    > rule `{$stack['old']->name}` renamed to `{$stack['new']->name}`." . PHP_EOL;
         }
 
-        foreach ($this->getRemoveRules() as $rule) {
-            $Rule = $rule instanceof \yii\rbac\Rule
-                ? $rule
-                : RbacFactory::Rule($rule);
-
+        foreach ($this->getRemoveRules() as $Rule) {
             $AuthManager->remove($Rule);
-            echo "    > rule `$rule` removed." . PHP_EOL;
+            echo "    > rule `{$Rule->name}` removed." . PHP_EOL;
         }
     }
 
@@ -297,33 +269,17 @@ abstract class RbacMigration extends \yii\db\Migration
     {
         $AuthManager = $this->getAuthManager();
 
-        foreach ($this->getRemoveRules() as $rule) {
-            $Rule = $rule instanceof \yii\rbac\Rule
-                ? $rule
-                : RbacFactory::Rule($rule);
-
+        foreach ($this->getRemoveRules() as $Rule) {
             $AuthManager->add($Rule);
             echo "    > old rule `{$Rule->name}` restored." . PHP_EOL;
         }
 
         foreach ($this->getRenamedRules() as $rule => $stack) {
-            $OldRule = $stack['old'] instanceof \yii\rbac\Rule
-                ? $stack['old']
-                : RbacFactory::Rule($stack['old']);
-
-            $NewRule = $stack['new'] instanceof \yii\rbac\Rule
-                ? $stack['new']
-                : RbacFactory::Rule($stack['new']);
-
-            $AuthManager->update($NewRule->name, $OldRule);
-            echo "    > rule `{$NewRule->name}` renamed to `{$OldRule->name}`." . PHP_EOL;
+            $AuthManager->update($stack['new']->name, $stack['old']);
+            echo "    > rule `{$stack['new']->name}` renamed to `{$stack['old']->name}`." . PHP_EOL;
         }
 
-        foreach ($this->getNewRules() as $rule) {
-            $Rule = $rule instanceof \yii\rbac\Rule
-                ? $rule
-                : RbacFactory::Rule($rule);
-
+        foreach ($this->getNewRules() as $Rule) {
             $AuthManager->remove($Rule);
             echo "    > new rule `{$Rule->name}` removed." . PHP_EOL;
         }
@@ -333,11 +289,7 @@ abstract class RbacMigration extends \yii\db\Migration
     {
         $AuthManager = $this->getAuthManager();
 
-        foreach ($this->getNewPermissions() as $permission => $description) {
-            $Permission = $description instanceof \yii\rbac\Permission
-                ? $description
-                : RbacFactory::Permission($permission, $description);
-
+        foreach ($this->getNewPermissions() as $Permission) {
             $AuthManager->add($Permission);
             echo "    > new permission `{$Permission->name}` added." . PHP_EOL;
         }
@@ -347,9 +299,9 @@ abstract class RbacMigration extends \yii\db\Migration
             echo "    > permission `{$stack['old']->name}` renamed to `{$stack['new']->name}`." . PHP_EOL;
         }
 
-        foreach ($this->getRemovePermissions() as $permission => $description) {
-            $AuthManager->remove(RbacFactory::Permission($permission));
-            echo "    > permission `{$permission}` removed." . PHP_EOL;
+        foreach ($this->getRemovePermissions() as $Permission) {
+            $AuthManager->remove($Permission);
+            echo "    > permission `{$Permission->name}` removed." . PHP_EOL;
         }
     }
 
@@ -357,13 +309,9 @@ abstract class RbacMigration extends \yii\db\Migration
     {
         $AuthManager = $this->getAuthManager();
 
-        foreach ($this->getRemovePermissions() as $permission => $description) {
-            $Permission = $description instanceof \yii\rbac\Permission
-                ? $description
-                : RbacFactory::Permission($permission, $description);
-
+        foreach ($this->getRemovePermissions() as $Permission) {
             $AuthManager->add($Permission);
-            echo "    > old permission `$permission` restored." . PHP_EOL;
+            echo "    > old permission `{$Permission->name}` restored." . PHP_EOL;
         }
 
         foreach ($this->getRenamedPermissions() as $permission => $stack) {
@@ -371,13 +319,9 @@ abstract class RbacMigration extends \yii\db\Migration
             echo "    > permission `{$stack['new']->name}` renamed to `{$stack['old']->name}`." . PHP_EOL;
         }
 
-        foreach ($this->getNewPermissions() as $permission => $description) {
-            $Permission = $description instanceof \yii\rbac\Permission
-                ? $description
-                : RbacFactory::Permission($permission, $description);
-
+        foreach ($this->getNewPermissions() as $Permission) {
             $AuthManager->remove($Permission);
-            echo "    > new permission `{$permission}` removed." . PHP_EOL;
+            echo "    > new permission `{$Permission->name}` removed." . PHP_EOL;
         }
     }
 

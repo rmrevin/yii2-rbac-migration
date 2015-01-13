@@ -26,19 +26,19 @@ class m140217_201400_rbac extends \rmrevin\yii\rbac\RbacMigration
     protected function getNewRoles()
     {
         return [
-            'admin' => 'Administrator',
-            'manager' => 'Manager',
-            'customer' => 'Customer',
-            'user' => 'User',
+            RbacFactory::Role('admin', 'Administrator'),
+            RbacFactory::Role('manager', 'Manager'),
+            RbacFactory::Role('customer', 'Customer'),
+            RbacFactory::Role('user', 'User'),
         ];
     }
 
     protected function getNewPermissions()
     {
         return [
-            'catalog.view' => 'Can view catalog',
-            'catalog.order' => 'Can order items from catalog',
-            'catalog.favorite' => 'Can mark favorite items',
+            RbacFactory::Permission('catalog.view', 'Can view catalog'),
+            RbacFactory::Permission('catalog.order', 'Can order items from catalog'),
+            RbacFactory::Permission('catalog.favorite', 'Can mark favorite items'),
         ];
     }
 
@@ -65,3 +65,23 @@ class m140217_201400_rbac extends \rmrevin\yii\rbac\RbacMigration
 }
 
 ```
+
+Reference
+---------
+Inheritance:
+* `protected getInheritance()`
+
+Rules:
+* `protected getNewRules()`
+* `protected getRenamedRules()`
+* `protected getRemoveRules()`
+
+Roles:
+* `protected getNewRoles()`
+* `protected getRenamedRoles()`
+* `protected getRemoveRoles()`
+
+Permissions:
+* `protected getNewPermissions()`
+* `protected getRenamedPermissions()`
+* `protected getRemovePermissions()`
