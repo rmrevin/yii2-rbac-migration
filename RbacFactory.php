@@ -22,7 +22,7 @@ class RbacFactory
     public static function Rule($name, $createdAt = null, $updatedAt = null)
     {
         return \Yii::createObject([
-            'class' => '\yii\rbac\Rule',
+            'class' => '\rmrevin\yii\rbac\Rule',
             'name' => $name,
             'createdAt' => empty($createdAt) ? time() : $createdAt,
             'updatedAt' => empty($updatedAt) ? time() : $updatedAt,
