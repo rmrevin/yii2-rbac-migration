@@ -63,8 +63,8 @@ abstract class RbacMigration extends \yii\db\Migration
         return [];
 //        example
 //        return [
-//            RbacFactory::Rule('its.my.order'),
-//            RbacFactory::Rule('its.my.comment'),
+//            RbacFactory::Rule('\app\rbac\ItsMyOrder', 'its.my.order'),
+//            RbacFactory::Rule('\app\rbac\ItsMyComment', 'its.my.comment'),
 //        ];
     }
 
@@ -77,8 +77,8 @@ abstract class RbacMigration extends \yii\db\Migration
 //        example
 //        return [
 //            'its.my.comment' => [
-//                'old' => RbacFactory::Rule('its.my.comment'),
-//                'new' => RbacFactory::Rule('its-my-comment'),
+//                'old' => RbacFactory::Rule('\app\rbac\ItsMyComment', 'its.my.comment'),
+//                'new' => RbacFactory::Rule('\app\rbac\ItsMyComment', 'its-my-comment'),
 //            ]
 //        ];
     }
@@ -91,7 +91,7 @@ abstract class RbacMigration extends \yii\db\Migration
         return [];
 //        example
 //        return [
-//            RbacFactory::Rule('its.my.comment'),
+//            RbacFactory::Rule('\app\rbac\ItsMyComment', 'its.my.comment'),
 //        ];
     }
 

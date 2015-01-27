@@ -14,15 +14,16 @@ class RbacFactory
 {
 
     /**
-     * @param $name
+     * @param string $class
+     * @param string $name
      * @param null $createdAt
      * @param null $updatedAt
      * @return \yii\rbac\Rule
      */
-    public static function Rule($name, $createdAt = null, $updatedAt = null)
+    public static function Rule($class, $name, $createdAt = null, $updatedAt = null)
     {
         return \Yii::createObject([
-            'class' => '\rmrevin\yii\rbac\Rule',
+            'class' => $class,
             'name' => $name,
             'createdAt' => empty($createdAt) ? time() : $createdAt,
             'updatedAt' => empty($updatedAt) ? time() : $updatedAt,
