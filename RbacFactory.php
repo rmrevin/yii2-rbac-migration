@@ -31,7 +31,7 @@ class RbacFactory
     }
 
     /**
-     * @param $name
+     * @param string $name
      * @param null $description
      * @param null $ruleName
      * @param null $data
@@ -43,7 +43,7 @@ class RbacFactory
     }
 
     /**
-     * @param $name
+     * @param string $name
      * @param null $description
      * @param null $ruleName
      * @param null $data
@@ -55,8 +55,8 @@ class RbacFactory
     }
 
     /**
-     * @param $class
-     * @param $name
+     * @param string $class
+     * @param string $name
      * @param null $description
      * @param null $ruleName
      * @param null $data
