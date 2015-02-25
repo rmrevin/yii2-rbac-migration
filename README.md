@@ -83,7 +83,8 @@ class m140217_201400_rbac extends \rmrevin\yii\rbac\RbacMigration
 Reference
 ---------
 Inheritance:
-* `protected getInheritance()`
+* `protected getNewInheritance()`
+* `protected getOldInheritance()`
 
 Rules:
 * `protected getNewRules()`
