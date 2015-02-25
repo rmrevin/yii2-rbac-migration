@@ -27,9 +27,10 @@ abstract class RbacMigration extends \yii\db\Migration
     }
 
     /**
+     * NOTE: Each migration must be present the full inheritance tree.
      * @return array
      */
-    protected function getInheritance()
+    protected function getNewInheritance()
     {
         return [];
 //        example
@@ -49,6 +50,30 @@ abstract class RbacMigration extends \yii\db\Migration
 //            'user' => [
 //                'frontend.access',
 //                'frontend.feedback.access',
+//                'frontend.catalog.access',
+//                'frontend.cart.access',
+//            ],
+//        ];
+    }
+
+    /**
+     * NOTE: Each migration must be present the full inheritance tree.
+     * @return array
+     */
+    protected function getOldInheritance()
+    {
+        return [];
+//        example
+//        return [
+//            'admin' => [
+//                'manager',
+//                'backend.access',
+//            ],
+//            'manager' => [
+//                'user',
+//            ],
+//            'user' => [
+//                'frontend.access',
 //                'frontend.catalog.access',
 //                'frontend.cart.access',
 //            ],
@@ -333,7 +358,7 @@ abstract class RbacMigration extends \yii\db\Migration
     {
         $AuthManager = $this->getAuthManager();
 
-        $inheritance = $this->getInheritance();
+        $inheritance = $this->getNewInheritance();
         foreach ($inheritance as $parent => $children) {
             $Parent = $this->detectRbacItem($parent);
             if (empty($Parent)) {
@@ -341,6 +366,7 @@ abstract class RbacMigration extends \yii\db\Migration
                 return false;
             }
 
+            $AuthManager->removeChildren($Parent['item']);
             foreach ($children as $child) {
                 $Child = $this->detectRbacItem($child);
                 if (empty($Child)) {
@@ -365,7 +391,7 @@ abstract class RbacMigration extends \yii\db\Migration
     {
         $AuthManager = $this->getAuthManager();
 
-        $inheritance = $this->getInheritance();
+        $inheritance = $this->getOldInheritance();
         foreach ($inheritance as $parent => $children) {
             $Parent = $this->detectRbacItem($parent);
             if (empty($Parent)) {
@@ -373,6 +399,7 @@ abstract class RbacMigration extends \yii\db\Migration
                 return false;
             }
 
+            $AuthManager->removeChildren($Parent['item']);
             foreach ($children as $child) {
                 $Child = $this->detectRbacItem($child);
                 if (empty($Child)) {
@@ -380,9 +407,9 @@ abstract class RbacMigration extends \yii\db\Migration
                     return false;
                 }
 
-                $AuthManager->removeChild($Parent['item'], $Child['item']);
+                $AuthManager->addChild($Parent['item'], $Child['item']);
 
-                echo "    > {$Child['type']} `$child` successfully detached from {$Parent['type']} `$parent`." . PHP_EOL;
+                echo "    > {$Parent['type']} `$parent` successfully inherited {$Child['type']} `$child`." . PHP_EOL;
             }
         }
 

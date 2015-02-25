@@ -42,7 +42,7 @@ class m140217_201400_rbac extends \rmrevin\yii\rbac\RbacMigration
         ];
     }
 
-    protected function getInheritance()
+    protected function getNewInheritance()
     {
         return [
             'admin' => [
@@ -59,6 +59,20 @@ class m140217_201400_rbac extends \rmrevin\yii\rbac\RbacMigration
             ],
             'user' => [
                 'catalog.view', // inherit permission catalog.view
+            ],
+        ];
+    }
+
+    protected function getOldInheritance()
+    {
+        return [
+            'admin' => [
+                'manager', // inherit role manager and all permissions from role manager & user
+            ],
+            'manager' => [
+                'user', // inherit role user and all permissions from role user
+            ],
+            'user' => [
             ],
         ];
     }
